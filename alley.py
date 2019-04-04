@@ -4,6 +4,7 @@ import viz
 import vizshape
 import vizcam
 import math
+import vizfx
 from Model import *
 
 # An instance of this class adds a maze to the scene along with 
@@ -14,7 +15,7 @@ class Alley(viz.EventClass):
 	def __init__(self):
 		# base class constructor 
 		viz.EventClass.__init__(self)
-		self.desk = Model('Bowling\\model.dae')
+		self.desk = Model('finished_alley.dae')
 		self.desk.setOrientation(self.desk.getX() + 1, self.desk.getY(), self.desk.getZ() + 4, .3, 0)
 		#self.desk.setPosition([0,.1,0]) 
 		# set up keyboard and timer callback methods
@@ -64,6 +65,8 @@ class Alley(viz.EventClass):
 		
 		self.spectator2.state(4)
 					
+		#lighting
+		vizfx.addDirectionalLight(color = viz.WHITE, euler = (0,90,0))
 	# Key pressed down event code.
 	def onKeyDown(self,key):
 		if (key == viz.KEY_LEFT):
