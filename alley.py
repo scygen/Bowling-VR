@@ -20,13 +20,20 @@ class Alley(viz.EventClass):
 		#self.desk.setPosition([0,.1,0]) 
 		# set up keyboard and timer callback methods
 		self.callback(viz.KEYDOWN_EVENT,self.onKeyDown)
+#		self.calback(viz.MOUSEDOWN_EVENT,self.onMouseDown)
 		#avatar's postion and rotation angle
 		self.x = 7.5
 		self.z = 2.5
 		self.theta = 270
 		self.value = 0
 		
-					
+		self.ball = Model('ball.dae')
+		mat = viz.Matrix()
+		mat.postScale(.3,.3,.3)
+		mat.postAxisAngle(0,1,0,self.theta)
+		mat.postTrans(self.x,.1,self.z);
+		self.ball.setMatrix(mat)
+		
 		self.avatar = viz.add('vcc_female.cfg')
 		mat = viz.Matrix()
 		mat.postScale(.3,.3,.3)
@@ -115,7 +122,7 @@ class Alley(viz.EventClass):
 			view = viz.MainView
 			mat = viz.Matrix()
 			mat.postAxisAngle(0,1,0,self.theta)
-			mat.postTrans(self.x+dx,.8,self.z+dz)
+			mat.postTrans(self.x+dx,.4,self.z+dz)
 			view.setMatrix(mat)		
 		
 		mat = viz.Matrix()
@@ -124,4 +131,13 @@ class Alley(viz.EventClass):
 		mat.postTrans(self.x,.1,self.z);
 		self.avatar.setMatrix(mat)
 	
-	
+#	
+#	def onMouseDown(self, button):
+#		if button == viz.MOUSEBUTTON_LEFT:
+#			print("left mouse pressed")
+#			self.obj = viz.pick()
+#			if self.obj == self.thanos.getNode():
+#				print("Picked Thanos.")
+#				
+#			if self.obj == self.monkey.getNode():
+#				print("Picked monkey")
