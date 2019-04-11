@@ -15,7 +15,7 @@ viz.window.setName( "Maze Navigation" )
 # get graphics window
 window = viz.MainWindow
 # setup viewing volume
-
+33
 # set background color of window to blue 
 viz.MainWindow.clearcolor( [0,0,150] ) 
 
