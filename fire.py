@@ -1,32 +1,4 @@
-﻿# alleymain.py
-# Driver code for maze lab
-  
-import viz
-import vizshape
-import vizcam
-import math
-
-from alley import *
-
-# set size (in pixels) and title of application window
-viz.window.setSize( 640*1.5, 480*1.5 )
-viz.window.setName( "Bowling!!!!!" )
-
-# get graphics window
-window = viz.MainWindow
-# setup viewing volume
-33
-# set background color of window to blue 
-viz.MainWindow.clearcolor( [0,0,150] ) 
-
-# allows mouse to rotate, translate, and zoom in/out on object
-pivotNav = vizcam.PivotNavigate()
-
-viz.phys.enable()
-
-c = Alley()
-
-import viz
+﻿import viz
 import vizmat
 
 viz.go()
@@ -35,25 +7,38 @@ import vizinfo
 vizinfo.InfoPanel()
 
 #Declare some constants
-GRID_WIDTH = 6
-GRID_HEIGHT  = 6
-SPACING  = 1.1
-MAX_BALLS = 20
-MIN_POWER = 1
-MAX_POWER = 5
+GRID_WIDTH      = 6
+GRID_HEIGHT     = 6
+SPACING         = 1.1
+MAX_BALLS       = 20
+MIN_POWER       = 1
+MAX_POWER       = 50
 
 #We need to enable physics
 viz.phys.enable()
 
+#Add a ground with an infinite collision plane
 ground = viz.addChild('ground.osgb')
 ground.collidePlane()
 
+#List for holding the boxes and balls
+boxes = []
 balls = []
+
+for i in range(GRID_WIDTH):
+    boxes.append([])
+    for j in range(GRID_HEIGHT):
+        #Add a box model
+        box = viz.addChild('crate.osgb',cache=viz.CACHE_CLONE)
+        #Use the boxes bounding box for collisions
+        box.collideBox()
+        #Add the box to the list
+        boxes[i].append(box)
 
 
 for x in range(MAX_BALLS):
     #Add a ball model
-    ball = viz.addChild('volleyball.osgb',scale=(.3,.3,.3),cache=viz.CACHE_CLONE)
+    ball = viz.addChild('volleyball.osgb',scale=(3.5,3.5,3.5),cache=viz.CACHE_CLONE)
     #The balls collision will be represented by the bounding sphere of the ball
     ball.collideSphere()
     #Add the body to the list
@@ -83,6 +68,15 @@ viz.mouse(viz.OFF)
 #This function will reset all the boxes and balls
 def ResetObjects():
 
+    for i in range(GRID_WIDTH):
+        for j in range(GRID_HEIGHT):
+            #Reset the physics of the object (This will zero its velocities and forces)
+            boxes[i][j].reset()
+            #Reset the position of the box
+            boxes[i][j].setPosition([(i*SPACING)-(GRID_WIDTH/2.0),j*SPACING+0.5,0])
+            #Reset the rotation of the box
+            boxes[i][j].setEuler([0,0,0])
+
     for b in balls:
         #Translate the ball underneath the ground
         b.setPosition([0,-5,0])
@@ -97,6 +91,8 @@ vizact.onkeydown('r',ResetObjects)
 def ChargePower():
     #Get detailed information about where the mouse is pointed
     info = viz.pick(1)
+    #Show and place marker based on intersection result
+    marker.visible(info.valid)
     marker.setPosition(info.point)
     #Increment the amount of power charged up
     power.set(power.get()+0.05)
@@ -123,3 +119,6 @@ def ShootBall():
     power.set(0)
 
 vizact.onmouseup(viz.MOUSEBUTTON_LEFT,ShootBall)
+
+#Set the background color
+viz.clearcolor(viz.SLATE)
