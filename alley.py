@@ -16,13 +16,49 @@ class Alley(viz.EventClass):
 		# base class constructor 
 		viz.EventClass.__init__(self)
 		self.desk = Model('finished_alley.dae')
+		self.pin1 = Model('pin.dae')
+		self.pin2 = Model('pin.dae')
+		self.pin3 = Model('pin.dae')
+		self.pin4 = Model('pin.dae')
+		self.pin5 = Model('pin.dae')
+		self.pin6 = Model('pin.dae')
+		self.pin7 = Model('pin.dae')
+		self.pin8 = Model('pin.dae')
+		self.pin9 = Model('pin.dae')
+		self.pin10 = Model('pin.dae')
+		
+		self.pins = {self.pin1,self.pin2,self.pin3,self.pin4,self.pin5,self.pin6,self.pin7,self.pin8,self.pin9,self.pin10}
+		
+		
+		
+		self.pinDist = 0.07
+		
+		
 		self.desk.setOrientation(self.desk.getX() + 1, self.desk.getY(), self.desk.getZ() + 4, .3, 0)
+		self.pin1.setOrientation(1.05, self.desk.getY()-0.05, 2.85, .3, 0)
+		self.pin2.setOrientation(1.05 - self.pinDist, self.desk.getY()-0.05, 2.85 - 0.5*self.pinDist, .3, 0)
+		self.pin3.setOrientation(1.05 - self.pinDist, self.desk.getY()-0.05, 2.85 + 0.5*self.pinDist, .3, 0)
+		self.pin4.setOrientation(1.05 - 2*self.pinDist, self.desk.getY()-0.05, 2.85, .3, 0)
+		self.pin5.setOrientation(1.05 - 2*self.pinDist, self.desk.getY()-0.05, 2.85 + self.pinDist, .3, 0)
+		self.pin6.setOrientation(1.05 - 2*self.pinDist, self.desk.getY()-0.05, 2.85 - self.pinDist, .3, 0)
+		self.pin7.setOrientation(1.05 - 3*self.pinDist, self.desk.getY()-0.05, 2.85 + 0.5*self.pinDist, .3, 0)
+		self.pin8.setOrientation(1.05 - 3*self.pinDist, self.desk.getY()-0.05, 2.85 - 0.5*self.pinDist, .3, 0)
+		self.pin9.setOrientation(1.05 - 3*self.pinDist, self.desk.getY()-0.05, 2.85 - 1.5*self.pinDist, .3, 0)
+		self.pin10.setOrientation(1.05 - 3*self.pinDist, self.desk.getY()-0.05, 2.85 + 1.5*self.pinDist, .3, 0)
+
+		
+		
+		
+		
 		#self.desk.setPosition([0,.1,0]) 
 		# set up keyboard and timer callback methods
 		self.callback(viz.KEYDOWN_EVENT,self.onKeyDown)
 		self.callback(viz.MOUSEDOWN_EVENT,self.onMouseDown)
 		self.callback(viz.TIMER_EVENT,self.onTimer)
+		self.callback(viz.COLLIDE_BEGIN_EVENT,self.onCollideBegin)
 		self.starttimer(1,.1,viz.FOREVER)
+		
+		
 		#avatar's postion and rotation angle
 		self.x = 7.5
 		self.z = 2.5
@@ -37,7 +73,7 @@ class Alley(viz.EventClass):
 		self.thrown = False
 		
 		self.ball = Model('ball.dae')
-		self.ball.setOrientation(self.x,.1,self.z, .1, 0)
+		self.ball.setOrientation(self.x,.09,self.z, .1, 0)
 		
 		self.avatar = viz.add('vcc_female.cfg')
 		mat = viz.Matrix()
@@ -79,6 +115,44 @@ class Alley(viz.EventClass):
 					
 		#lighting
 		vizfx.addDirectionalLight(color = viz.WHITE, euler = (0,90,0))
+		
+		self.pin1.node.collideBox()
+		self.pin2.node.collideBox()
+		self.pin3.node.collideBox()
+		self.pin4.node.collideBox()
+		self.pin5.node.collideBox()
+		self.pin6.node.collideBox()
+		self.pin7.node.collideBox()
+		self.pin8.node.collideBox()
+		self.pin9.node.collideBox()
+		self.pin10.node.collideBox()
+		self.desk.node.collideMesh()
+		self.ball.node.collideSphere(bounce = 0)
+		
+		self.ball.node.enable(viz.COLLIDE_NOTIFY)
+		
+		for pin in self.pins:
+			pin.node.enable(viz.COLLIDE_NOTIFY)
+			
+		self.ball.node.disable(viz.DYNAMICS)
+		
+		self.pin1.node.disable(viz.DYNAMICS)
+		self.pin2.node.disable(viz.DYNAMICS)
+		self.pin3.node.disable(viz.DYNAMICS)
+		self.pin4.node.disable(viz.DYNAMICS)
+		self.pin5.node.disable(viz.DYNAMICS)
+		self.pin6.node.disable(viz.DYNAMICS)
+		self.pin7.node.disable(viz.DYNAMICS)
+		self.pin8.node.disable(viz.DYNAMICS)
+		self.pin9.node.disable(viz.DYNAMICS)
+		self.pin10.node.disable(viz.DYNAMICS)
+		
+		
+	def onCollideBegin(self,e):
+		for pin in self.pins:
+			if(e.obj1 == pin.node or e.obj2 == pin.node):
+				pin.node.enable(viz.DYNAMICS)
+		
 	# Key pressed down event code.
 	def onKeyDown(self,key):
 		if (key == viz.KEY_LEFT):
@@ -122,29 +196,13 @@ class Alley(viz.EventClass):
 				self.z = 3.9
 			elif self.z < 1.5:
 				self.z = 1.6
-			
-		elif (key == "1"):
-			view = viz.MainView
-			mat = viz.Matrix()
-			mat.postAxisAngle(1,0,0,90)
-			mat.postTrans(0,20,0)
-			view.setMatrix(mat)
-			self.mode = "thirdperson"
-			
-		elif (key == "2"):
-			view = viz.MainView
-			mat = viz.Matrix()
-			mat.postAxisAngle(1,0,0,45)
-			mat.postAxisAngle(0,1,0,-90)
-			mat.postTrans(20,15,5)
-			view.setMatrix(mat)
-			self.mode = "thirdperson"
+
 			
 		elif (key == "4"):
-			self.bx = self.x
-			self.bz = self.z
+			self.ball.node.enable(viz.DYNAMICS)
+			
+			self.ball.node.setVelocity([1,0,0])
 			self.thrown = True
-		
 		
 		elif (key == "3"):
 			self.mode = "firstperson"
@@ -178,20 +236,17 @@ class Alley(viz.EventClass):
 				self.picked = True
 			
 	def onTimer(self,num):
+		
 		if(self.bx <  3):
 			self.picked = False
 			self.thrown = False
 			self.bx = 7.5
 			self.bz = 2.85
 			self.ball.setOrientation(self.bx,.2,self.bz, .1, 0)
-			
-		if(self.picked == True and self.thrown == True):
-			self.ballMove = -.05
-			self.bx = self.bx+self.ballMove
-			self.ball.setOrientation(self.bx,.1,self.bz, .1, 0)
-		elif(self.picked == True):
-			self.ball.setOrientation(self.x,.2,self.z+.2, .1, 0)
-		else:
-			self.ball.setOrientation(self.bx,.2,self.bz, .1, 0)
+		if(self.thrown == False):
+			if(self.picked == True):
+				self.ball.setOrientation(self.x,.2,self.z+.2, .1, 0)
+			else:
+				self.ball.setOrientation(self.bx,.2,self.bz, .1, 0)
 			
 		
